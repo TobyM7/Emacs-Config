@@ -23,7 +23,6 @@
 (setq backup-directory-alist '((".*" . "~/.local/share/Trash/files")))
 
 (use-package beacon
-  :diminish
 :config(setq beacon-mode 1))
 
 (use-package company
@@ -64,11 +63,11 @@
 (use-package diminish)
 
 (use-package dimmer
-  :custom (dimmer-fraction 0.6))
- 
- ;(dimmer-configure-which-key)
- ;(dimmer-configure-helm)
- ;(dimmer-mode 1)
+  :custom (dimmer-fraction 0.6)
+:config 
+ (dimmer-mode 1)
+ (dimmer-configure-which-key)
+ (dimmer-configure-helm))
 
 (use-package dired-open
   :config

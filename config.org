@@ -125,7 +125,6 @@ By default, Emacs creates automatic backups of files in their original directori
 * BEACON
 #+begin_src emacs-lisp
 (use-package beacon
-  :diminish
 :config(setq beacon-mode 1))
 #+end_src
 * COMPANY
@@ -184,11 +183,11 @@ This package implements hiding or abbreviation of the modeline displays (lighter
 * DIMMER
 #+begin_src emacs-lisp
 (use-package dimmer
-  :custom (dimmer-fraction 0.6))
- 
- ;(dimmer-configure-which-key)
- ;(dimmer-configure-helm)
- ;(dimmer-mode 1)
+  :custom (dimmer-fraction 0.6)
+:config 
+ (dimmer-mode 1)
+ (dimmer-configure-which-key)
+ (dimmer-configure-helm))
 #+end_src
 * DIRED
 #+begin_src emacs-lisp
