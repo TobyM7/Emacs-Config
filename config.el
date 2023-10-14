@@ -631,7 +631,7 @@
 
 (use-package tldr)
 
-(add-to-list 'default-frame-alist '(alpha-background . 100)) ; For all new frames henceforth
+(add-to-list 'default-frame-alist '(alpha-background . 60)) ; For all new frames henceforth
 
 (use-package which-key
   :init
