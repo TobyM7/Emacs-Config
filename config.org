@@ -18,6 +18,7 @@
 - [[#diminish][DIMINISH]]
 - [[#dimmer][DIMMER]]
 - [[#dired][DIRED]]
+- [[#elfeed][ELFEED]]
 - [[#evil][EVIL]]
 - [[#expand-region][EXPAND REGION]]
 - [[#flycheck][FLYCHECK]]
@@ -213,8 +214,28 @@ This package implements hiding or abbreviation of the modeline displays (lighter
 
 
 #+RESULTS:
+* ELFEED
+An RSS newsfeed reader for Emacs.  Move through the articles with 'j/k'.  Move through the stories with 'CTRL j/k' when in other frame.
+
+#+begin_src emacs-lisp
+(use-package elfeed
+  :config
+  (setq elfeed-search-feed-face ":foreground #ffffff :weight bold"))
+ 
+
+(use-package elfeed-goodies
+  :init
+  (elfeed-goodies/setup)
+  :config
+  (setq elfeed-goodies/entry-pane-size 0.5))
+
+#+end_src
+
+#+RESULTS:
+
 
 * EVIL
+
 [[https://github.com/emacs-evil/evil][Evil]] is an extensible vi/vim layer for Emacs.  Because...let's face it.  The Vim keybindings are just plain better.
 
 #+begin_src emacs-lisp
@@ -508,11 +529,12 @@ You can use the bindings CTRL plus =/- for zooming in/out.  You can also use CTR
 #+end_src
 ** Open
 #+begin_src emacs-lisp
-          (leader-keys
-            "o" '(:ignore t :wk "Open")
-            "o d" '(dashboard-open :wk "Dashboard")
-            "o f" '(make-frame :wk "Open buffer in new frame")
-            "o F" '(select-frame-by-name :wk "Select frame by name"))
+(leader-keys
+  "o" '(:ignore t :wk "Open")
+  "o d" '(dashboard-open :wk "Dashboard")
+  "o f" '(make-frame :wk "Open buffer in new frame")
+  "o e" '(elfeed :wk "Elfeed RSS")
+  "o F" '(select-frame-by-name :wk "Select frame by name"))
 #+end_src
 ** Projectile
 #+begin_src emacs-lisp
