@@ -18,7 +18,6 @@
 - [[#diminish][DIMINISH]]
 - [[#dimmer][DIMMER]]
 - [[#dired][DIRED]]
-- [[#elfeed][ELFEED]]
 - [[#evil][EVIL]]
 - [[#expand-region][EXPAND REGION]]
 - [[#flycheck][FLYCHECK]]
@@ -214,25 +213,6 @@ This package implements hiding or abbreviation of the modeline displays (lighter
 
 
 #+RESULTS:
-* ELFEED
-An RSS newsfeed reader for Emacs.  Move through the articles with 'j/k'.  Move through the stories with 'CTRL j/k' when in other frame.
-
-#+begin_src emacs-lisp
-(use-package elfeed
-  :config
-  (setq elfeed-search-feed-face ":foreground #ffffff :weight bold"))
- 
-
-(use-package elfeed-goodies
-  :init
-  (elfeed-goodies/setup)
-  :config
-  (setq elfeed-goodies/entry-pane-size 0.5))
-
-#+end_src
-
-#+RESULTS:
-
 
 * EVIL
 

@@ -87,17 +87,6 @@
     (evil-define-key 'normal peep-dired-mode-map (kbd "k") 'peep-dired-prev-file)
 )
 
-(use-package elfeed
-  :config
-  (setq elfeed-search-feed-face ":foreground #ffffff :weight bold"))
- 
-
-(use-package elfeed-goodies
-  :init
-  (elfeed-goodies/setup)
-  :config
-  (setq elfeed-goodies/entry-pane-size 0.5))
-
 ;; Expands to: (elpaca evil (use-package evil :demand t))
 (use-package evil
     :init      ;; tweak evil's configuration before loading it
@@ -344,7 +333,6 @@
   "o" '(:ignore t :wk "Open")
   "o d" '(dashboard-open :wk "Dashboard")
   "o f" '(make-frame :wk "Open buffer in new frame")
-  "o e" '(elfeed :wk "Elfeed RSS")
   "o F" '(select-frame-by-name :wk "Select frame by name"))
 
 ;; projectile-command-map already has a ton of bindings 
