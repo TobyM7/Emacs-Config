@@ -335,7 +335,6 @@
   "o" '(:ignore t :wk "Open")
   "o d" '(dashboard-open :wk "Dashboard")
   "o f" '(make-frame :wk "Open buffer in new frame")
-  "o e" '(elfeed :wk "Elfeed RSS")
   "o F" '(select-frame-by-name :wk "Select frame by name"))
 
 ;; projectile-command-map already has a ton of bindings 

@@ -515,7 +515,6 @@ You can use the bindings CTRL plus =/- for zooming in/out.  You can also use CTR
   "o" '(:ignore t :wk "Open")
   "o d" '(dashboard-open :wk "Dashboard")
   "o f" '(make-frame :wk "Open buffer in new frame")
-  "o e" '(elfeed :wk "Elfeed RSS")
   "o F" '(select-frame-by-name :wk "Select frame by name"))
 #+end_src
 ** Projectile
