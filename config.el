@@ -632,8 +632,6 @@
 
 (use-package sudo-edit)
 
-(add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
-
 (use-package doom-themes
   :config
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
