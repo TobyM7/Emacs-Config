@@ -41,6 +41,7 @@
 - [[#git-programs][GIT PROGRAMS]]
   - [[#git-time-machine][Git Time Machine]]
   - [[#magit][Magit]]
+- [[#helpful][HELPFUL]]
 - [[#highlight-todo][HIGHLIGHT TODO]]
 - [[#ivy-counsel][IVY (COUNSEL)]]
 - [[#language-support][LANGUAGE SUPPORT]]
@@ -249,7 +250,7 @@ This package implements hiding or abbreviation of the modeline displays (lighter
   (define-key evil-motion-state-map (kbd "TAB") nil))
 ;; Setting RETURN key in org-mode to follow links
   (setq org-return-follows-link  t)
-
+  (global-set-key (kbd "C-u") 'evil-scroll-up)
 #+end_src
 * EXPAND REGION
 #+begin_src emacs-lisp
@@ -334,6 +335,7 @@ You can use the bindings CTRL plus =/- for zooming in/out.  You can also use CTR
 ** Elpy
 #+begin_src emacs-lisp 
 (leader-keys
+  :keymaps 'python-mode-map
   "l" '(:ignore t :wk "Elpy")'
   "l f" '(blacken-buffer :wk "Applies black to current buffer")
   "l F" '(blacken-mode :wk "Applies black on save to current buffer")
@@ -525,12 +527,13 @@ You can use the bindings CTRL plus =/- for zooming in/out.  You can also use CTR
 #+end_src
 ** Search
 #+begin_src emacs-lisp
-          (leader-keys
-            "s" '(:ignore t :wk "Search")
-            "s d" '(dictionary-search :wk "Search dictionary")
-            "s m" '(man :wk "Man pages")
-            "s t" '(tldr :wk "Lookup TLDR docs for a command")
-            "s w" '(woman :wk "Similar to man but doesn't require man"))
+(leader-keys
+        "s" '(:ignore t :wk "Search")
+        "s d" '(dictionary-search :wk "Search dictionary")
+        "s m" '(man :wk "Man pages")
+        "s t" '(tldr :wk "Lookup TLDR docs for a command")
+        "s c" '(counsel-command-history :wk "Lookup recent commands")
+        "s w" '(woman :wk "Similar to man but doesn't require man"))
 #+end_src
 ** Toggle
 #+begin_src emacs-lisp
@@ -592,6 +595,18 @@ You can use the bindings CTRL plus =/- for zooming in/out.  You can also use CTR
 
 #+end_src
 
+* HELPFUL
+#+begin_src emacs-lisp
+(use-package helpful
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . counsel-describe-variable)
+  ([remap describe-key] . helpful-key))
+#+end_src
 * HIGHLIGHT TODO
 Adding highlights to TODO and related words.
 

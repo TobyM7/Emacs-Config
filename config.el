@@ -117,6 +117,7 @@
   (define-key evil-motion-state-map (kbd "TAB") nil))
 ;; Setting RETURN key in org-mode to follow links
   (setq org-return-follows-link  t)
+(global-set-key (kbd "C-u") 'evil-scroll-up)
 
 (use-package expand-region
   :bind ("C-;" . er/expand-region))
@@ -175,6 +176,7 @@
     "u" '(universal-argument :wk "Universal argument"))
 
 (leader-keys
+  :keymaps 'python-mode-map
   "l" '(:ignore t :wk "Elpy")'
   "l f" '(blacken-buffer :wk "Applies black to current buffer")
   "l F" '(blacken-mode :wk "Applies black on save to current buffer")
@@ -333,6 +335,7 @@
   "o" '(:ignore t :wk "Open")
   "o d" '(dashboard-open :wk "Dashboard")
   "o f" '(make-frame :wk "Open buffer in new frame")
+  "o e" '(elfeed :wk "Elfeed RSS")
   "o F" '(select-frame-by-name :wk "Select frame by name"))
 
 ;; projectile-command-map already has a ton of bindings 
@@ -341,11 +344,12 @@
   "p" '(projectile-command-map :wk "Projectile"))
 
 (leader-keys
-  "s" '(:ignore t :wk "Search")
-  "s d" '(dictionary-search :wk "Search dictionary")
-  "s m" '(man :wk "Man pages")
-  "s t" '(tldr :wk "Lookup TLDR docs for a command")
-  "s w" '(woman :wk "Similar to man but doesn't require man"))
+        "s" '(:ignore t :wk "Search")
+        "s d" '(dictionary-search :wk "Search dictionary")
+        "s m" '(man :wk "Man pages")
+        "s t" '(tldr :wk "Lookup TLDR docs for a command")
+        "s c" '(counsel-command-history :wk "Lookup recent commands")
+        "s w" '(woman :wk "Similar to man but doesn't require man"))
 
 (leader-keys
   "t" '(:ignore t :wk "Toggle")
@@ -388,6 +392,16 @@
 )
 
 (use-package magit)
+
+(use-package helpful
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . counsel-describe-variable)
+  ([remap describe-key] . helpful-key))
 
 (use-package hl-todo
   :hook ((org-mode . hl-todo-mode)
