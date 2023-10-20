@@ -117,7 +117,7 @@
   (define-key evil-motion-state-map (kbd "TAB") nil))
 ;; Setting RETURN key in org-mode to follow links
   (setq org-return-follows-link  t)
-(global-set-key (kbd "C-u") 'evil-scroll-up)
+  (global-set-key (kbd "C-u") 'evil-scroll-up)
 
 (use-package expand-region
   :bind ("C-;" . er/expand-region))
@@ -246,7 +246,7 @@
             (dired "~/.config/emacs/")) 
           :wk "Open user-emacs-directory in dired")
   "f d" '(find-grep-dired :wk "Search for string in files in DIR")
-  "f g" '(counsel-grep-or-swiper :wk "Search for string current file")
+  "f s" '(counsel-grep-or-swiper :wk "Search for string current file")
   "f i" '((lambda () (interactive)
             (find-file "~/.config/emacs/init.el")) 
           :wk "Open emacs init.el")
@@ -271,11 +271,11 @@
    "g f f" '(magit-find-file :wk "Magit find file")
    "g f g" '(magit-find-git-config-file :wk "Find gitconfig file")
    "g F" '(magit-fetch :wk "Git fetch")
-   "g g" '(magit-status :wk "Magit status")
+   "g s" '(magit-status :wk "Magit status")
    "g i" '(magit-init :wk "Initialize git repo")
    "g l" '(magit-log-buffer-file :wk "Magit buffer log")
    "g r" '(vc-revert :wk "Git revert file")
-   "g s" '(magit-stage-file :wk "Git stage file")
+   "g g" '(magit-stage-file :wk "Git stage file")
    "g t" '(git-timemachine :wk "Git time machine")
    "g u" '(magit-stage-file :wk "Git unstage file"))
 
@@ -534,8 +534,11 @@
 (add-hook 'kill-emacs-hook #'persp-state-save)
 
 (use-package projectile
-  :config
-  (projectile-mode 1))
+ :custom ((projectile-completion-system 'ivy)) 
+ :config
+ (projectile-mode 1))
+(use-package counsel-projectile
+  :config (counsel-projectile-mode))
 
 (use-package elpy
   :init

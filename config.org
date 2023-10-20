@@ -416,7 +416,7 @@ You can use the bindings CTRL plus =/- for zooming in/out.  You can also use CTR
                       (dired "~/.config/emacs/")) 
                     :wk "Open user-emacs-directory in dired")
             "f d" '(find-grep-dired :wk "Search for string in files in DIR")
-            "f g" '(counsel-grep-or-swiper :wk "Search for string current file")
+            "f s" '(counsel-grep-or-swiper :wk "Search for string current file")
             "f i" '((lambda () (interactive)
                       (find-file "~/.config/emacs/init.el")) 
                     :wk "Open emacs init.el")
@@ -445,11 +445,11 @@ You can use the bindings CTRL plus =/- for zooming in/out.  You can also use CTR
             "g f f" '(magit-find-file :wk "Magit find file")
             "g f g" '(magit-find-git-config-file :wk "Find gitconfig file")
             "g F" '(magit-fetch :wk "Git fetch")
-            "g g" '(magit-status :wk "Magit status")
+            "g s" '(magit-status :wk "Magit status")
             "g i" '(magit-init :wk "Initialize git repo")
             "g l" '(magit-log-buffer-file :wk "Magit buffer log")
             "g r" '(vc-revert :wk "Git revert file")
-            "g s" '(magit-stage-file :wk "Git stage file")
+            "g g" '(magit-stage-file :wk "Git stage file")
             "g t" '(git-timemachine :wk "Git time machine")
             "g u" '(magit-stage-file :wk "Git unstage file"))
 #+end_src
@@ -592,7 +592,6 @@ You can use the bindings CTRL plus =/- for zooming in/out.  You can also use CTR
 
 #+begin_src emacs-lisp
 (use-package magit)
-
 #+end_src
 
 * HELPFUL
@@ -827,8 +826,11 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 
 #+begin_src emacs-lisp
 (use-package projectile
-  :config
-  (projectile-mode 1))
+ :custom ((projectile-completion-system 'ivy)) 
+ :config
+ (projectile-mode 1))
+(use-package counsel-projectile
+  :config (counsel-projectile-mode))
 #+end_src
 
 * PYTHON
