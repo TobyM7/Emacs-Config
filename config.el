@@ -51,7 +51,6 @@
   ;;(setq dashboard-startup-banner 'logo) ;; use standard emacs logo as banner
   (setq dashboard-center-content nil) ;; set to 't' for centered content
   (setq dashboard-items '((recents . 5)
-                          (agenda . 5 )
                           (bookmarks . 3)
                           (registers . 3)))
   :custom 
@@ -89,13 +88,13 @@
 
 ;; Expands to: (elpaca evil (use-package evil :demand t))
 (use-package evil
-    :init      ;; tweak evil's configuration before loading it
-    (setq evil-want-integration t  ;; This is optional since it's already set to t by default.
-          evil-want-keybinding nil
-          evil-vsplit-window-right t
-          evil-split-window-below t
-          evil-undo-system 'undo-redo)  ;; Adds vim-like C-r redo functionality
-    (evil-mode))
+  :init      ;; tweak evil's configuration before loading it
+  (setq evil-want-integration t  ;; This is optional since it's already set to t by default.
+        evil-want-keybinding nil
+        evil-vsplit-window-right t
+        evil-split-window-below t
+        evil-undo-system 'undo-redo)  ;; Adds vim-like C-r redo functionality
+  (evil-mode))
 
 (use-package evil-collection
   :after evil
@@ -116,8 +115,11 @@
   (define-key evil-motion-state-map (kbd "RET") nil)
   (define-key evil-motion-state-map (kbd "TAB") nil))
 ;; Setting RETURN key in org-mode to follow links
-  (setq org-return-follows-link  t)
-  (global-set-key (kbd "C-u") 'evil-scroll-up)
+(setq org-return-follows-link  t)
+(global-set-key (kbd "C-u") 'evil-scroll-up)
+  ;(general-define-key
+   ;:keymaps '(normal visual) 
+   ;"/" 'counsel-grep-or-swiper)
 
 (use-package expand-region
   :bind ("C-;" . er/expand-region))
@@ -316,7 +318,6 @@
 
 (leader-keys
   "m" '(:ignore t :wk "Org")
-  "m a" '(org-agenda :wk "Org agenda")
   "m e" '(org-export-dispatch :wk "Org export dispatch")
   "m i" '(org-toggle-item :wk "Org toggle item")
   "m t" '(org-todo :wk "Org todo")
@@ -488,10 +489,24 @@
     :init (add-hook 'org-mode-hook 'toc-org-enable))
 
 (add-hook 'org-mode-hook 'org-indent-mode)
-(use-package org-bullets)
+(use-package org-bullets
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 
 (eval-after-load 'org-indent '(diminish 'org-indent-mode))
+
+(setq org-ellipsis " ▾" 
+      org-hide-emphasis-markers t)
+(font-lock-add-keywords 'org-mode
+                        '(("^ *\\([-]\\) "
+                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+(org-babel-do-load-languages
+  'org-babel-load-languages
+  '((emacs-lisp . t)
+    (python . t)))
+(setq org-confirm-babel-evaluate nil)
 
 (custom-set-faces
  '(org-level-1 ((t (:inherit outline-1 :height 1.7))))
@@ -502,13 +517,16 @@
  '(org-level-6 ((t (:inherit outline-5 :height 1.2))))
  '(org-level-7 ((t (:inherit outline-5 :height 1.1)))))
 
-(require 'org-tempo)
-
 (use-package org-auto-tangle
 :defer t
 :hook (org-mode . org-auto-tangle-mode)
 :config
 (setq org-auto-tangle-default t))
+
+(require 'org-tempo)
+(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+(add-to-list 'org-structure-template-alist '("py" . "src python"))
 
 (use-package perspective
   :custom
