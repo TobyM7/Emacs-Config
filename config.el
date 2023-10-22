@@ -3,6 +3,19 @@
 (require 'elpaca-setup)  ;; The Elpaca Package Manager
 (require 'buffer-move)   ;; Buffer-move for better window management
 
+(defun set-exec-path-from-shell-PATH ()
+  (interactive)
+  (let ((path-from-shell (replace-regexp-in-string
+			  "[ \t\n]*$" "" (shell-command-to-string
+					  "$SHELL --login -c 'echo $PATH'"
+						    ))))
+    (setenv "PATH" path-from-shell)
+    (setq exec-path (split-string path-from-shell path-separator))))
+
+(set-exec-path-from-shell-PATH)
+(setenv "PATH" (concat (getenv "PATH") ":~/.local/bin/"))
+(setq exec-path (append exec-path '("~/.local/bin/")))
+
 (use-package all-the-icons
   :ensure t
   :if (display-graphic-p))
@@ -178,27 +191,29 @@
     "u" '(universal-argument :wk "Universal argument"))
 
 (leader-keys
-  :keymaps 'python-mode-map
-  "l" '(:ignore t :wk "Elpy")'
-  "l f" '(blacken-buffer :wk "Applies black to current buffer")
-  "l F" '(blacken-mode :wk "Applies black on save to current buffer")
-  "l c" '(elpy-company-backend :wk "Suggest a completion")
-  "l d" '(elpy-goto-definition :wk "Go to definition")
-  "l D" '(pop-tag-mark :wk "Go to last place l d was used")
-  "l a" '(elpy-goto-assignment :wk "Go to assignment")
-  "l l" '(elpy-occur-definitions :wk "List classes and function")
-  "l s" '(:ignore t :wk "Syntax")
-  "l s c" '(elpy-check :wk "Check for errors")
-  "l s n" '( elpy-flymake-next-error :wk "Next error")
-  "l s p" '( elpy-flymake-previous-error :wk "Previous error")
-  "l o" '(elpy-doc :wk "Open python docs")
-  "l e" '(elpy-multiedit-python-symbol-at-point :wk "Edit all ocurrences")
-  "l r" '(:ignore t :wk "Refactor")
-  "l r r" '(elpy-refactor-rename :wk "Rename ocurrences of things")  
-  "l r f" '(elpy-refactor-extract-function :wk "Move selection to a new function")  
-  "l r v" '(elpy-refactor-extract-variable :wk "Move selection to a new variable")  
-  "l r i" '(elpy-refactor-inline :wk  "Inline the variable at point")  
-
+ "l" '(:ignore t :wk "Elpy")'
+ "l f" '(blacken-buffer :wk "Applies black to current buffer")
+ "l F" '(blacken-mode :wk "Applies black on save to current buffer")
+ "l d" '(elpy-goto-definition :wk "Go to definition")
+ "l D" '(pop-tag-mark :wk "Go to last place l d was used")
+ "l a" '(elpy-goto-assignment :wk "Go to assignment")
+ "l l" '(elpy-occur-definitions :wk "List classes and function")
+ "l c" '(elpy-check :wk "Check for errors")
+ "l n" '( elpy-flymake-next-error :wk "Next error")
+ "l p" '( elpy-flymake-previous-error :wk "Previous error")
+ "l o" '(elpy-doc :wk "Open python docs")
+ "l e" '(elpy-multiedit-python-symbol-at-point :wk "Edit all ocurrences")
+ "l r" '(:ignore t :wk "Refactor")
+ "l r r" '(elpy-refactor-rename :wk "Rename ocurrences of things")  
+ "l r f" '(elpy-refactor-extract-function :wk "Move selection to a new function")  
+ "l r v" '(elpy-refactor-extract-variable :wk "Move selection to a new variable")  
+ "l r i" '(elpy-refactor-inline :wk  "Inline the variable at point")  
+ "l s" '(:ignore t :wk "Shell")
+ "l s b" '(elpy-shell-send-buffer :wk "Send buffer to Shell")
+ "l s f" '(elpy-shell-send-file :wk "Send file to Shell")
+ "l s w" '(:ignore t :wk "Switch")
+ "l s w s" '(elpy-shell-switch-to-shell-in-current-window :wk "Go to the Shell")
+ "l s w b" '(elpy-shell-switch-to-buffer-in-current-window :wk "Go to the buffer")
 )
 
 (leader-keys
@@ -452,9 +467,43 @@
   (ivy-set-display-transformer 'ivy-switch-buffer
                                'ivy-rich-switch-buffer-transformer))
 
-(use-package haskell-mode)
-(use-package lua-mode)
-(use-package php-mode)
+(defun lsp-mode-setup ()
+  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+  (lsp-headerline-breadcrumb-mode))
+
+(use-package lsp-mode
+  :commands (lsp lsp-deferred)
+  :hook (lsp-mode . lsp-mode-setup)
+  :init
+  (setq lsp-keymap-prefix "C-c")  ;; Or 'C-l', 's-l'
+  :config
+  (lsp-enable-which-key-integration t))
+
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-doc-position 'bottom))
+
+(use-package lsp-ivy)
+
+(use-package dap-mode
+  ;; Uncomment the config below if you want all UI panes to be hidden by default!
+  ;; :custom
+  ;; (lsp-enable-dap-auto-configure nil)
+  ;; :config
+  ;; (dap-ui-mode 1)
+
+  :config
+  ;; Set up Node debugging
+  (require 'dap-python)
+  (setq dap-python-debugger 'debugpy);; Automatically installs Node debug adapter if needed
+
+  ;; Bind `C-c l d` to `dap-hydra` for easy access
+; (general-define-key
+;   :keymaps 'lsp-mode-map
+;   :prefix lsp-keymap-prefix
+;   "d" '(dap-hydra t :wk "debugger"))
+)
 
 (global-set-key [escape] 'keyboard-escape-quit)
 
@@ -557,12 +606,23 @@
 (use-package counsel-projectile
   :config (counsel-projectile-mode))
 
-(use-package elpy
-  :init
-  :diminish)
+;(use-package elpy
+;:init
+;:diminish)
 
-(use-package blacken
-  :init)
+;(use-package blacken
+;:init)
+
+(use-package python-mode
+  :ensure t
+  :hook (python-mode . lsp-deferred)
+  :custom
+  ;; NOTE: Set these if Python 3 is called "python3" on your system!
+  (python-shell-interpreter "python3")
+  (dap-python-executable "python3")
+  (dap-python-debugger 'debugpy)
+  :config
+  (require 'dap-python))
 
 (use-package rainbow-delimiters
   :hook ((emacs-lisp-mode . rainbow-delimiters-mode)

@@ -6,6 +6,7 @@
 - [[#important-programs-to-load-first][IMPORTANT PROGRAMS TO LOAD FIRST]]
   - [[#adding-the-scripts-directory-to-path][Adding the scripts directory to path]]
   - [[#sourcing-the-scripts][Sourcing the scripts]]
+  - [[#fix-path][Fix Path]]
 - [[#icons][ICONS]]
   - [[#all-the-icons][All the icons]]
   - [[#nerd-icons][Nerd-icons]]
@@ -44,7 +45,11 @@
 - [[#helpful][HELPFUL]]
 - [[#highlight-todo][HIGHLIGHT TODO]]
 - [[#ivy-counsel][IVY (COUNSEL)]]
-- [[#language-support][LANGUAGE SUPPORT]]
+- [[#lsp][LSP]]
+  - [[#lsp-mode][LSP Mode]]
+  - [[#lsp-ui][LSP UI]]
+  - [[#lsp-ivy][LSP-Ivy]]
+  - [[#dap][DAP]]
 - [[#minibuffer-escape][MINIBUFFER ESCAPE]]
 - [[#modeline][MODELINE]]
 - [[#neotree][NEOTREE]]
@@ -63,6 +68,7 @@
 - [[#python][PYTHON]]
   - [[#elpy-1][Elpy]]
   - [[#black][Black]]
+  - [[#python-mode][Python Mode]]
 - [[#rainbow-delimiters][RAINBOW DELIMITERS]]
 - [[#rainbow-mode][RAINBOW MODE]]
 - [[#sane-defaults][SANE DEFAULTS]]
@@ -90,7 +96,23 @@ To keep this =config.org= a reasonable length, I have moved a lot of code to ind
 (require 'elpaca-setup)  ;; The Elpaca Package Manager
 (require 'buffer-move)   ;; Buffer-move for better window management
 #+end_src
+** Fix Path
+Set up Emacs' `exec-path' and PATH environment variable to match
+that used by the user's shell.
+#+begin_src emacs-lisp
+(defun set-exec-path-from-shell-PATH ()
+  (interactive)
+  (let ((path-from-shell (replace-regexp-in-string
+			  "[ \t\n]*$" "" (shell-command-to-string
+					  "$SHELL --login -c 'echo $PATH'"
+						    ))))
+    (setenv "PATH" path-from-shell)
+    (setq exec-path (split-string path-from-shell path-separator))))
 
+(set-exec-path-from-shell-PATH)
+(setenv "PATH" (concat (getenv "PATH") ":~/.local/bin/"))
+(setq exec-path (append exec-path '("~/.local/bin/")))
+#+end_src
 * ICONS
 ** All the icons
 This is an icon set that can be used with dashboard, dired, ibuffer and other Emacs programs.
@@ -340,27 +362,29 @@ You can use the bindings CTRL plus =/- for zooming in/out.  You can also use CTR
 ** Elpy
 #+begin_src emacs-lisp 
 (leader-keys
-  :keymaps 'python-mode-map
-  "l" '(:ignore t :wk "Elpy")'
-  "l f" '(blacken-buffer :wk "Applies black to current buffer")
-  "l F" '(blacken-mode :wk "Applies black on save to current buffer")
-  "l c" '(elpy-company-backend :wk "Suggest a completion")
-  "l d" '(elpy-goto-definition :wk "Go to definition")
-  "l D" '(pop-tag-mark :wk "Go to last place l d was used")
-  "l a" '(elpy-goto-assignment :wk "Go to assignment")
-  "l l" '(elpy-occur-definitions :wk "List classes and function")
-  "l s" '(:ignore t :wk "Syntax")
-  "l s c" '(elpy-check :wk "Check for errors")
-  "l s n" '( elpy-flymake-next-error :wk "Next error")
-  "l s p" '( elpy-flymake-previous-error :wk "Previous error")
-  "l o" '(elpy-doc :wk "Open python docs")
-  "l e" '(elpy-multiedit-python-symbol-at-point :wk "Edit all ocurrences")
-  "l r" '(:ignore t :wk "Refactor")
-  "l r r" '(elpy-refactor-rename :wk "Rename ocurrences of things")  
-  "l r f" '(elpy-refactor-extract-function :wk "Move selection to a new function")  
-  "l r v" '(elpy-refactor-extract-variable :wk "Move selection to a new variable")  
-  "l r i" '(elpy-refactor-inline :wk  "Inline the variable at point")  
-
+ "l" '(:ignore t :wk "Elpy")'
+ "l f" '(blacken-buffer :wk "Applies black to current buffer")
+ "l F" '(blacken-mode :wk "Applies black on save to current buffer")
+ "l d" '(elpy-goto-definition :wk "Go to definition")
+ "l D" '(pop-tag-mark :wk "Go to last place l d was used")
+ "l a" '(elpy-goto-assignment :wk "Go to assignment")
+ "l l" '(elpy-occur-definitions :wk "List classes and function")
+ "l c" '(elpy-check :wk "Check for errors")
+ "l n" '( elpy-flymake-next-error :wk "Next error")
+ "l p" '( elpy-flymake-previous-error :wk "Previous error")
+ "l o" '(elpy-doc :wk "Open python docs")
+ "l e" '(elpy-multiedit-python-symbol-at-point :wk "Edit all ocurrences")
+ "l r" '(:ignore t :wk "Refactor")
+ "l r r" '(elpy-refactor-rename :wk "Rename ocurrences of things")  
+ "l r f" '(elpy-refactor-extract-function :wk "Move selection to a new function")  
+ "l r v" '(elpy-refactor-extract-variable :wk "Move selection to a new variable")  
+ "l r i" '(elpy-refactor-inline :wk  "Inline the variable at point")  
+ "l s" '(:ignore t :wk "Shell")
+ "l s b" '(elpy-shell-send-buffer :wk "Send buffer to Shell")
+ "l s f" '(elpy-shell-send-file :wk "Send file to Shell")
+ "l s w" '(:ignore t :wk "Switch")
+ "l s w s" '(elpy-shell-switch-to-shell-in-current-window :wk "Go to the Shell")
+ "l s w b" '(elpy-shell-switch-to-buffer-in-current-window :wk "Go to the buffer")
 )
 #+end_src
 ** Bookmarks/Buffers
@@ -671,16 +695,58 @@ Adding highlights to TODO and related words.
 
 #+end_src
 
-* LANGUAGE SUPPORT
-Emacs has built-in programming language modes for Lisp, Scheme, DSSSL, Ada, ASM, AWK, C, C++, Fortran, Icon, IDL (CORBA), IDLWAVE, Java, Javascript, M4, Makefiles, Metafont, Modula2, Object Pascal, Objective-C, Octave, Pascal, Perl, Pike, PostScript, Prolog, Python, Ruby, Simula, SQL, Tcl, Verilog, and VHDL.  Other languages will require you to install additional modes.
-
+* LSP
+** LSP Mode
 #+begin_src emacs-lisp
-(use-package haskell-mode)
-(use-package lua-mode)
-(use-package php-mode)
+
+(defun lsp-mode-setup ()
+  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+  (lsp-headerline-breadcrumb-mode))
+
+(use-package lsp-mode
+  :commands (lsp lsp-deferred)
+  :hook (lsp-mode . lsp-mode-setup)
+  :init
+  (setq lsp-keymap-prefix "C-c")  ;; Or 'C-l', 's-l'
+  :config
+  (lsp-enable-which-key-integration t))
 
 #+end_src
+** LSP UI
+#+begin_src emacs-lisp
 
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-doc-position 'bottom))
+#+end_src
+** LSP-Ivy 
+lsp-ivy-workspace-symbol - Search for a symbol name in the current project workspace
+lsp-ivy-global-workspace-symbol - Search for a symbol name in all active project workspaces
+#+begin_src emacs-lisp
+(use-package lsp-ivy)
+#+end_src
+** DAP
+#+begin_src emacs-lisp
+(use-package dap-mode
+  ;; Uncomment the config below if you want all UI panes to be hidden by default!
+  ;; :custom
+  ;; (lsp-enable-dap-auto-configure nil)
+  ;; :config
+  ;; (dap-ui-mode 1)
+
+  :config
+  ;; Set up Node debugging
+  (require 'dap-python)
+  (setq dap-python-debugger 'debugpy);; Automatically installs Node debug adapter if needed
+
+  ;; Bind `C-c l d` to `dap-hydra` for easy access
+; (general-define-key
+;   :keymaps 'lsp-mode-map
+;   :prefix lsp-keymap-prefix
+;   "d" '(dap-hydra t :wk "debugger"))
+)
+#+end_src
 * MINIBUFFER ESCAPE
 By default, Emacs requires you to hit ESC three times to escape quit the minibuffer.  
 
@@ -856,14 +922,32 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 * PYTHON
 ** Elpy
 #+begin_src emacs-lisp
-(use-package elpy
-  :init
-  :diminish)
+   ;(use-package elpy
+   ;:init
+   ;:diminish)
 #+end_src
 ** Black
 #+begin_src emacs-lisp
-(use-package blacken
-  :init)
+   ;(use-package blacken
+   ;:init)
+#+end_src
+** Python Mode
+#+begin_src shell
+pip install --user "python-language-server[all]"
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package python-mode
+  :ensure t
+  :hook (python-mode . lsp-deferred)
+  :custom
+  ;; NOTE: Set these if Python 3 is called "python3" on your system!
+  (python-shell-interpreter "python3")
+  (dap-python-executable "python3")
+  (dap-python-debugger 'debugpy)
+  :config
+  (require 'dap-python))
+
 #+end_src
 * RAINBOW DELIMITERS
 Adding rainbow coloring to parentheses.
