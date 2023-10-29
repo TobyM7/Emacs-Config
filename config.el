@@ -16,6 +16,20 @@
 (setenv "PATH" (concat (getenv "PATH") ":~/.local/bin/"))
 (setq exec-path (append exec-path '("~/.local/bin/")))
 
+(defun insert-mode-hook ()
+  (when (eq evil-state 'insert) ; Checks if entering insert mode
+    (setq flycheck-keymap-prefix nil )
+    (setq lsp-keymap-prefix nil)
+
+    )
+  (when (eq evil-state 'normal) ; Checks if leaving insert mode
+    (setq lsp-keymap-prefix "SPC l")
+    (setq flycheck-keymap-prefix (kbd "SPC l f"))
+    ))
+
+(add-hook 'evil-insert-state-entry-hook 'insert-mode-hook)
+(add-hook 'evil-insert-state-exit-hook 'insert-mode-hook)
+
 (use-package all-the-icons
   :ensure t
   :if (display-graphic-p))
@@ -142,6 +156,7 @@
   :defer t
   :diminish
   :init (global-flycheck-mode))
+;; (setq flycheck-keymap-prefix (kbd "S-SPC l f"))
 
 (set-face-attribute 'default nil
   :font "JetBrains Mono"
@@ -181,7 +196,7 @@
     :states '(normal insert visual emacs)
     :keymaps 'override
     :prefix "SPC" ;; set leader
-    :global-prefix "M-SPC") ;; access leader in insert mode
+    :global-prefix "S-SPC") ;; access leader in insert mode
 
   (leader-keys
     "SPC" '(counsel-M-x :wk "Counsel M-x")
@@ -191,29 +206,29 @@
     "u" '(universal-argument :wk "Universal argument"))
 
 (leader-keys
- "l" '(:ignore t :wk "Elpy")'
- "l f" '(blacken-buffer :wk "Applies black to current buffer")
- "l F" '(blacken-mode :wk "Applies black on save to current buffer")
- "l d" '(elpy-goto-definition :wk "Go to definition")
- "l D" '(pop-tag-mark :wk "Go to last place l d was used")
- "l a" '(elpy-goto-assignment :wk "Go to assignment")
- "l l" '(elpy-occur-definitions :wk "List classes and function")
- "l c" '(elpy-check :wk "Check for errors")
- "l n" '( elpy-flymake-next-error :wk "Next error")
- "l p" '( elpy-flymake-previous-error :wk "Previous error")
- "l o" '(elpy-doc :wk "Open python docs")
- "l e" '(elpy-multiedit-python-symbol-at-point :wk "Edit all ocurrences")
- "l r" '(:ignore t :wk "Refactor")
- "l r r" '(elpy-refactor-rename :wk "Rename ocurrences of things")  
- "l r f" '(elpy-refactor-extract-function :wk "Move selection to a new function")  
- "l r v" '(elpy-refactor-extract-variable :wk "Move selection to a new variable")  
- "l r i" '(elpy-refactor-inline :wk  "Inline the variable at point")  
- "l s" '(:ignore t :wk "Shell")
- "l s b" '(elpy-shell-send-buffer :wk "Send buffer to Shell")
- "l s f" '(elpy-shell-send-file :wk "Send file to Shell")
- "l s w" '(:ignore t :wk "Switch")
- "l s w s" '(elpy-shell-switch-to-shell-in-current-window :wk "Go to the Shell")
- "l s w b" '(elpy-shell-switch-to-buffer-in-current-window :wk "Go to the buffer")
+ "y" '(:ignore t :wk "Elpy")'
+ "y f" '(blacken-buffer :wk "Applies black to current buffer")
+ "y F" '(blacken-mode :wk "Applies black on save to current buffer")
+ "y d" '(elpy-goto-definition :wk "Go to definition")
+ "y D" '(pop-tag-mark :wk "Go to last place l d was used")
+ "y a" '(elpy-goto-assignment :wk "Go to assignment")
+ "y l" '(elpy-occur-definitions :wk "List classes and function")
+ "y c" '(elpy-check :wk "Check for errors")
+ "y n" '( elpy-flymake-next-error :wk "Next error")
+ "y p" '( elpy-flymake-previous-error :wk "Previous error")
+ "y o" '(elpy-doc :wk "Open python docs")
+ "y e" '(elpy-multiedit-python-symbol-at-point :wk "Edit all ocurrences")
+ "y r" '(:ignore t :wk "Refactor")
+ "y r r" '(elpy-refactor-rename :wk "Rename ocurrences of things")  
+ "y r f" '(elpy-refactor-extract-function :wk "Move selection to a new function")  
+ "y r v" '(elpy-refactor-extract-variable :wk "Move selection to a new variable")  
+ "y r i" '(elpy-refactor-inline :wk  "Inline the variable at point")  
+ "y s" '(:ignore t :wk "Shell")
+ "y s b" '(elpy-shell-send-buffer :wk "Send buffer to Shell")
+ "y s f" '(elpy-shell-send-file :wk "Send file to Shell")
+ "y s w" '(:ignore t :wk "Switch")
+ "y s w s" '(elpy-shell-switch-to-shell-in-current-window :wk "Go to the Shell")
+ "y s w b" '(elpy-shell-switch-to-buffer-in-current-window :wk "Go to the buffer")
 )
 
 (leader-keys
@@ -469,14 +484,15 @@
 
 (defun lsp-mode-setup ()
   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-  (lsp-headerline-breadcrumb-mode))
+  (lsp-headerline-breadcrumb-mode)
+)
 
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
   :hook (lsp-mode . lsp-mode-setup)
-  :init
-  (setq lsp-keymap-prefix "C-c")  ;; Or 'C-l', 's-l'
-  :config
+  ;; :init
+  ;; (setq lsp-keymap-prefix "S-SPC l")
+   :config
   (lsp-enable-which-key-integration t))
 
 (use-package lsp-ui
@@ -492,6 +508,7 @@
   ;; (lsp-enable-dap-auto-configure nil)
   ;; :config
   ;; (dap-ui-mode 1)
+
 
   :config
   ;; Set up Node debugging
